@@ -180,7 +180,7 @@ export default class PublishSettingTab extends PluginSettingTab {
 
         new Setting(parentEL)
             .setName("Target Path")
-            .setDesc("The path to store image.\nSupport {year} {mon} {day} {random} {filename} vars. For example, /{year}/{mon}/{day}/{filename} with uploading pic.jpg, it will store as /2023/06/08/pic.jpg.")
+            .setDesc("The path to store image.\nSupport {year} {mon} {day} {random} {filename} {path} vars. For example, /{path}/{year}/{mon}/{day}/{filename} with uploading pic.jpg from Diary/2025/06/ note, it will store as /Diary/2025/06/15/pic.jpg.")
             .addText(text =>
                 text
                     .setPlaceholder("Enter path")
@@ -213,7 +213,7 @@ export default class PublishSettingTab extends PluginSettingTab {
 
         new Setting(parentEL)
             .setName("Folder name")
-            .setDesc("Please enter the directory name, otherwise leave it blank")
+            .setDesc("Please enter the directory name, otherwise leave it blank. Support {year} {mon} {day} {random} {filename} {path} vars. For example, {path}/{year}/{mon}/{day} with uploading from Diary/2025/06/ note, it will store in Diary/2025/06/15/ folder.")
             .addText(text =>
                 text
                     .setPlaceholder("Enter the folder name")
@@ -284,7 +284,7 @@ export default class PublishSettingTab extends PluginSettingTab {
                 .onChange(value => this.plugin.settings.awsS3Setting.bucketName = value));
         new Setting(parentEL)
             .setName("Target Path")
-            .setDesc("The path to store image.\nSupport {year} {mon} {day} {random} {filename} vars. For example, /{year}/{mon}/{day}/{filename} with uploading pic.jpg, it will store as /2023/06/08/pic.jpg.")
+            .setDesc("The path to store image.\nSupport {year} {mon} {day} {random} {filename} {path} vars. For example, /{path}/{year}/{mon}/{day}/{filename} with uploading pic.jpg from Diary/2025/06/ note, it will store as /Diary/2025/06/15/pic.jpg.")
             .addText(text =>
                 text
                     .setPlaceholder("Enter path")
@@ -341,7 +341,7 @@ export default class PublishSettingTab extends PluginSettingTab {
 
         new Setting(parentEL)
             .setName("Target Path")
-            .setDesc("The path to store image.\nSupport {year} {mon} {day} {random} {filename} vars. For example, /{year}/{mon}/{day}/{filename} with uploading pic.jpg, it will store as /2023/06/08/pic.jpg.")
+            .setDesc("The path to store image.\nSupport {year} {mon} {day} {random} {filename} {path} vars. For example, /{path}/{year}/{mon}/{day}/{filename} with uploading pic.jpg from Diary/2025/06/ note, it will store as /Diary/2025/06/15/pic.jpg.")
             .addText(text =>
                 text
                     .setPlaceholder("Enter path")
@@ -385,14 +385,14 @@ export default class PublishSettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.kodoSetting.bucket)
                     .onChange(value => this.plugin.settings.kodoSetting.bucket = value))
 
-        // new Setting(parentEL)
-        //     .setName("Target Path")
-        //     .setDesc("The path to store image.\nSupport {year} {mon} {day} {random} {filename} vars. For example, /{year}/{mon}/{day}/{filename} with uploading pic.jpg, it will store as /2023/06/08/pic.jpg.")
-        //     .addText(text =>
-        //         text
-        //             .setPlaceholder("Enter path")
-        //             .setValue(this.plugin.settings.kodoSetting.path)
-        //             .onChange(value => this.plugin.settings.kodoSetting.path = value))
+        new Setting(parentEL)
+            .setName("Target Path")
+            .setDesc("The path to store image.\nSupport {year} {mon} {day} {random} {filename} {path} vars. For example, /{path}/{year}/{mon}/{day}/{filename} with uploading pic.jpg from Diary/2025/06/ note, it will store as /Diary/2025/06/15/pic.jpg.")
+            .addText(text =>
+                text
+                    .setPlaceholder("Enter path")
+                    .setValue(this.plugin.settings.kodoSetting.path)
+                    .onChange(value => this.plugin.settings.kodoSetting.path = value))
 
         //custom domain
         new Setting(parentEL)
@@ -436,15 +436,15 @@ export default class PublishSettingTab extends PluginSettingTab {
                     .onChange(value => this.plugin.settings.githubSetting.token = value)
             );
 
-        /*new Setting(parentEL)
+        new Setting(parentEL)
             .setName("Target Path")
-            .setDesc("The path to store images within the repository.\nSupport {year} {mon} {day} {random} {filename} vars. For example, images/{year}/{mon}/{day}/{filename} with uploading pic.jpg, it will store as images/2023/06/08/pic.jpg.")
+            .setDesc("The path to store images within the repository.\nSupport {year} {mon} {day} {random} {filename} {path} vars. For example, images/{path}/{year}/{mon}/{day}/{filename} with uploading pic.jpg from Diary/2025/06/ note, it will store as images/Diary/2025/06/15/pic.jpg.")
             .addText(text =>
                 text
                     .setPlaceholder("Enter path")
                     .setValue(this.plugin.settings.githubSetting.path)
                     .onChange(value => this.plugin.settings.githubSetting.path = value)
-            );*/
+            );
     }
 
     private static githubTokenDescription() {
@@ -494,7 +494,7 @@ export default class PublishSettingTab extends PluginSettingTab {
 
         new Setting(parentEL)
             .setName("Target Path")
-            .setDesc("The path to store image.\nSupport {year} {mon} {day} {random} {filename} vars. For example, /{year}/{mon}/{day}/{filename} with uploading pic.jpg, it will store as /2023/06/08/pic.jpg.")
+            .setDesc("The path to store image.\nSupport {year} {mon} {day} {random} {filename} {path} vars. For example, /{path}/{year}/{mon}/{day}/{filename} with uploading pic.jpg from Diary/2025/06/ note, it will store as /Diary/2025/06/15/pic.jpg.")
             .addText(text =>
                 text
                     .setPlaceholder("Enter path")

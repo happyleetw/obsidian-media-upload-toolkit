@@ -1,8 +1,8 @@
 import COS from "cos-nodejs-sdk-v5"
-import ImageUploader from "../imageUploader";
+import MediaUploader from "../imageUploader";
 import {UploaderUtils} from "../uploaderUtils";
 
-export default class CosUploader implements ImageUploader {
+export default class CosUploader implements MediaUploader {
 
     private readonly client!: COS;
     private readonly pathTmpl: String;
@@ -21,12 +21,12 @@ export default class CosUploader implements ImageUploader {
         this.region = setting.region;
     }
 
-    async upload(image: File, fullPath: string): Promise<string> {
+    async upload(media: File, fullPath: string, notePath?: string): Promise<string> {
         const result = this.client.putObject({
-            Body: Buffer.from((await image.arrayBuffer())),
+            Body: Buffer.from((await media.arrayBuffer())),
             Bucket: this.bucket,
             Region: this.region,
-            Key: UploaderUtils.generateName(this.pathTmpl, image.name),
+            Key: UploaderUtils.generateName(this.pathTmpl, media.name, notePath),
         });
         var url = 'https://' + (await result).Location;
         return UploaderUtils.customizeDomainName(url, this.customDomainName);

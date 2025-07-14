@@ -4,7 +4,7 @@ import {
 } from "obsidian";
 
 import ImageTagProcessor, {ACTION_PUBLISH} from "./uploader/imageTagProcessor";
-import ImageUploader from "./uploader/imageUploader";
+import MediaUploader from "./uploader/imageUploader";
 import {ImgurAnonymousSetting} from "./uploader/imgur/imgurAnonymousUploader";
 import {IMGUR_PLUGIN_CLIENT_ID} from "./uploader/imgur/constants";
 import ImageStore from "./imageStore";
@@ -99,7 +99,7 @@ const DEFAULT_SETTINGS: PublishSettings = {
 export default class ObsidianPublish extends Plugin {
     settings: PublishSettings;
     imageTagProcessor: ImageTagProcessor;
-    imageUploader: ImageUploader;
+    imageUploader: MediaUploader;
     statusBarItem: HTMLElement;
 
     async onload() {

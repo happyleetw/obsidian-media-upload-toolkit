@@ -1,8 +1,8 @@
-import ImageUploader from "../imageUploader";
+import MediaUploader from "../imageUploader";
 import AWS from 'aws-sdk';
 import {UploaderUtils} from "../uploaderUtils";
 
-export default class R2Uploader implements ImageUploader {
+export default class R2Uploader implements MediaUploader {
   private readonly r2!: AWS.S3;
   private readonly bucket!: string;
   private pathTmpl: string;
@@ -22,16 +22,16 @@ export default class R2Uploader implements ImageUploader {
     this.customDomainName = setting.customDomainName;
   }
 
-  async upload(image: File, fullPath: string): Promise<string> {
-    const arrayBuffer = await this.readFileAsArrayBuffer(image);
+  async upload(media: File, fullPath: string, notePath?: string): Promise<string> {
+    const arrayBuffer = await this.readFileAsArrayBuffer(media);
     const uint8Array = new Uint8Array(arrayBuffer);
-    var path = UploaderUtils.generateName(this.pathTmpl, image.name);
+    var path = UploaderUtils.generateName(this.pathTmpl, media.name, notePath);
     path = path.replace(/^\/+/, ''); // remove the /
     const params = {
       Bucket: this.bucket,
       Key: path,
       Body: uint8Array,
-      ContentType: `image/${image.name.split('.').pop()}`,
+      ContentType: `image/${media.name.split('.').pop()}`,
     };
     return new Promise((resolve, reject) => {
       this.r2.upload(params, (err, data) => {

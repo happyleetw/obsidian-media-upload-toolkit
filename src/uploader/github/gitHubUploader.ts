@@ -1,7 +1,7 @@
-import ImageUploader from "../imageUploader";
+import MediaUploader from "../imageUploader";
 import { Octokit } from "@octokit/rest";
 
-export default class GitHubUploader implements ImageUploader {
+export default class GitHubUploader implements MediaUploader {
   private readonly octokit: Octokit;
   private readonly owner: string;
   private readonly repo: string;
@@ -21,12 +21,12 @@ export default class GitHubUploader implements ImageUploader {
     this.path = setting.path;
   }
 
-  async upload(image: File, fullPath: string): Promise<string> {
+      async upload(media: File, fullPath: string, notePath?: string): Promise<string> {
     try {
-      const arrayBuffer = await this.readFileAsArrayBuffer(image);
+      const arrayBuffer = await this.readFileAsArrayBuffer(media);
       const base64Content = this.arrayBufferToBase64(arrayBuffer);
       
-      const filePath = image.name.replace(/^\/+/, ''); // Remove leading slashes
+      const filePath = media.name.replace(/^\/+/, ''); // Remove leading slashes
       
       // Get the SHA of the file if it exists (needed for updating)
       let fileSha: string | undefined;
@@ -50,7 +50,7 @@ export default class GitHubUploader implements ImageUploader {
         owner: this.owner,
         repo: this.repo,
         path: filePath,
-        message: `Upload image: ${image.name}`,
+        message: `Upload image: ${media.name}`,
         content: base64Content,
         branch: this.branch,
         sha: fileSha

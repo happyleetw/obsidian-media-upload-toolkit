@@ -1,4 +1,4 @@
-export default interface ImageUploader {
-    upload(image: File, fullPath: string): Promise<string>;
+export default interface MediaUploader {
+    upload(media: File, fullPath: string, notePath?: string): Promise<string>;
 }
 

@@ -1,8 +1,8 @@
-import ImageUploader from "../imageUploader";
+import MediaUploader from "../imageUploader";
 import {UploaderUtils} from "../uploaderUtils";
 import OSS from "ali-oss"
 
-export default class OssUploader implements ImageUploader {
+export default class OssUploader implements MediaUploader {
     private readonly client!: OSS;
     private readonly pathTmpl: String;
     private readonly customDomainName: String;
@@ -21,8 +21,8 @@ export default class OssUploader implements ImageUploader {
         this.customDomainName = setting.customDomainName;
     }
 
-    async upload(image: File, path: string): Promise<string> {
-        const result = this.client.put(UploaderUtils.generateName(this.pathTmpl, image.name), path);
+    async upload(media: File, path: string, notePath?: string): Promise<string> {
+        const result = this.client.put(UploaderUtils.generateName(this.pathTmpl, media.name, notePath), path);
         return UploaderUtils.customizeDomainName((await result).url, this.customDomainName);
     }
 

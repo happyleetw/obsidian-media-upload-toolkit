@@ -1,5 +1,5 @@
 import {PublishSettings} from "../publish";
-import ImageUploader from "./imageUploader";
+import MediaUploader from "./imageUploader";
 import ImageStore from "../imageStore";
 import ImgurAnonymousUploader from "./imgur/imgurAnonymousUploader";
 import OssUploader from "./oss/ossUploader";
@@ -10,7 +10,7 @@ import KodoUploader from "./qiniu/kodoUploader";
 import GitHubUploader from "./github/gitHubUploader";
 import R2Uploader from "./r2/r2Uploader";
 
-export default function buildUploader(settings: PublishSettings): ImageUploader {
+export default function buildUploader(settings: PublishSettings): MediaUploader {
     switch (settings.imageStore) {
         case ImageStore.IMGUR.id:
             return new ImgurAnonymousUploader(settings.imgurAnonymousSetting.clientId);

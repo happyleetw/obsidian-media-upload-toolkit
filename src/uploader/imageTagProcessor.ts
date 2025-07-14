@@ -1,14 +1,14 @@
 import {App, Editor, FileSystemAdapter, MarkdownView, normalizePath, Notice} from "obsidian";
 import path from "path";
-import ImageUploader from "./imageUploader";
+import MediaUploader from "./imageUploader";
 import {PublishSettings} from "../publish";
 import UploadProgressModal from "../ui/uploadProgressModal";
 
-const MD_REGEX = /\!\[(.*)\]\((.*?\.(png|jpg|jpeg|gif|svg|webp|excalidraw))\)/g;
-const WIKI_REGEX = /\!\[\[(.*?\.(png|jpg|jpeg|gif|svg|webp|excalidraw))(|.*)?\]\]/g;
+const MD_REGEX = /\!\[(.*)\]\((.*?\.(png|jpg|jpeg|gif|svg|webp|excalidraw|mp4|avi|mov|wmv|flv|webm|mkv|m4v|3gp|ogv))\)/g;
+const WIKI_REGEX = /\!\[\[(.*?\.(png|jpg|jpeg|gif|svg|webp|excalidraw|mp4|avi|mov|wmv|flv|webm|mkv|m4v|3gp|ogv))(|.*)?\]\]/g;
 const PROPERTIES_REGEX = /^---[\s\S]+?---\n/;
 
-interface Image {
+interface Media {
     name: string;
     path: string;
     url: string;
@@ -25,13 +25,13 @@ export const ACTION_PUBLISH: string = "PUBLISH";
 
 export default class ImageTagProcessor {
     private readonly app: App;
-    private readonly imageUploader: ImageUploader;
+    private readonly imageUploader: MediaUploader;
     private settings: PublishSettings;
     private adapter: FileSystemAdapter;
     private progressModal: UploadProgressModal | null = null;
     private readonly useModal: boolean = true; // Set to true to use modal, false to use status bar
 
-    constructor(app: App, settings: PublishSettings, imageUploader: ImageUploader, useModal: boolean = true) {
+    constructor(app: App, settings: PublishSettings, imageUploader: MediaUploader, useModal: boolean = true) {
         this.app = app;
         this.adapter = this.app.vault.adapter as FileSystemAdapter;
         this.settings = settings;
@@ -42,9 +42,13 @@ export default class ImageTagProcessor {
     public async process(action: string): Promise<void> {
         let value = this.getValue();
         const basePath = this.adapter.getBasePath();
-        const promises: Promise<Image>[] = [];
+        const promises: Promise<Media>[] = [];
         const images = this.getImageLists(value);
         const uploader = this.imageUploader;
+        
+        // Get current note path for R2 path generation
+        const activeFile = this.app.workspace.getActiveFile();
+        const notePath = activeFile ? activeFile.path : '';
         
         // Initialize progress display
         if (this.useModal && images.length > 0) {
@@ -66,8 +70,8 @@ export default class ImageTagProcessor {
             
             try {
                 const buf = await this.adapter.readBinary(image.path);
-                promises.push(new Promise<Image>((resolve, reject) => {
-                    uploader.upload(new File([buf], image.name), basePath + '/' + image.path)
+                promises.push(new Promise<Media>((resolve, reject) => {
+                    uploader.upload(new File([buf], image.name), basePath + '/' + image.path, notePath)
                         .then(imgUrl => {
                             image.url = imgUrl;
                             // Update progress on successful upload
@@ -106,7 +110,7 @@ export default class ImageTagProcessor {
         }))).then(results => {
             // Modal will auto-close when all uploads complete
             // Filter out null results from failed promises
-            const successfulImages = results.filter(img => img !== null) as Image[];
+            const successfulImages = results.filter(img => img !== null) as Media[];
             
             let altText;
             for (const image of successfulImages) {
@@ -136,8 +140,8 @@ export default class ImageTagProcessor {
         });
     }
 
-    private getImageLists(value: string): Image[] {
-        const images: Image[] = [];
+    private getImageLists(value: string): Media[] {
+        const images: Media[] = [];
         
         try {
             const wikiMatches = value.matchAll(WIKI_REGEX);
@@ -162,7 +166,7 @@ export default class ImageTagProcessor {
         return images;
     }
 
-    private processMatched(path: string, src: string, images: Image[]){    
+    private processMatched(path: string, src: string, images: Media[]){    
         try {
             const {resolvedPath, name} = this.resolveImagePath(path);
             // check the item with same resolvedPath 

@@ -1,7 +1,7 @@
 {
   "id": "image-upload-toolkit",
-  "name": "Image Upload Toolkit",
-  "description": "Upload local images to remote store (Imgur, AliYun OSS, Imagekit, Amazon S3, TencentCloud COS and Qiniu Kodo).",
+  "name": "Media Upload Toolkit",
+  "description": "Upload local images and videos to remote store (Imgur, AliYun OSS, Imagekit, Amazon S3, TencentCloud COS and Qiniu Kodo).",
   "author": "Addo Zhang",
   "authorUrl": "https://atbug.com",
   "isDesktopOnly": true,

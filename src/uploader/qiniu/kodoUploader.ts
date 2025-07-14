@@ -1,8 +1,8 @@
-import ImageUploader from "../imageUploader";
+import MediaUploader from "../imageUploader";
 import qiniu from "qiniu";
 import {UploaderUtils} from "../uploaderUtils";
 
-export default class KodoUploader implements ImageUploader {
+export default class KodoUploader implements MediaUploader {
 
     private uploadToken: string;
     private tokenExpireTime: number;
@@ -12,7 +12,7 @@ export default class KodoUploader implements ImageUploader {
         this.setting = setting;
     }
 
-    async upload(image: File, path: string): Promise<string> {
+    async upload(media: File, path: string, notePath?: string): Promise<string> {
         //check custom domain name
         if (!this.setting.customDomainName || this.setting.customDomainName.trim() === "") {
             throw new Error("Custom domain name is required for Qiniu Kodo.")
@@ -21,7 +21,7 @@ export default class KodoUploader implements ImageUploader {
         const config = new qiniu.conf.Config();
         const formUploader = new qiniu.form_up.FormUploader(config);
         const putExtra = new qiniu.form_up.PutExtra();
-        let key = UploaderUtils.generateName(this.setting.path, image.name.replaceAll(' ', '_')); //replace space with _ in file name
+        let key = UploaderUtils.generateName(this.setting.path, media.name.replaceAll(' ', '_'), notePath); //replace space with _ in file name
         return formUploader
             .putFile(this.uploadToken, key, path, putExtra)
             .then(({data, resp}) => {
