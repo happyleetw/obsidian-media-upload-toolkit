@@ -5,7 +5,7 @@ import {PublishSettings} from "../publish";
 import UploadProgressModal from "../ui/uploadProgressModal";
 
 const MD_REGEX = /\!\[(.*)\]\((.*?\.(png|jpg|jpeg|gif|svg|webp|excalidraw|mp4|avi|mov|wmv|flv|webm|mkv|m4v|3gp|ogv))\)/g;
-const WIKI_REGEX = /\!\[\[(.*?\.(png|jpg|jpeg|gif|svg|webp|excalidraw|mp4|avi|mov|wmv|flv|webm|mkv|m4v|3gp|ogv))(|.*)?\]\]/g;
+const WIKI_REGEX = /\!\[\[([^\]]*?\.(png|jpg|jpeg|gif|svg|webp|excalidraw|mp4|avi|mov|wmv|flv|webm|mkv|m4v|3gp|ogv))(\|[^\]]*)?\]\]/g;
 const PROPERTIES_REGEX = /^---[\s\S]+?---\n/;
 
 interface Media {
@@ -49,6 +49,11 @@ export default class ImageTagProcessor {
         // Get current note path for R2 path generation
         const activeFile = this.app.workspace.getActiveFile();
         const notePath = activeFile ? activeFile.path : '';
+        
+        console.log(`[ImageTagProcessor] 找到 ${images.length} 個媒體文件:`);
+        images.forEach((img, index) => {
+            console.log(`  ${index + 1}. ${img.name} (${img.path}) - 來源: "${img.source}"`);
+        });
         
         // Initialize progress display
         if (this.useModal && images.length > 0) {
@@ -112,13 +117,38 @@ export default class ImageTagProcessor {
             // Filter out null results from failed promises
             const successfulImages = results.filter(img => img !== null) as Media[];
             
+            console.log(`[ImageTagProcessor] 上傳結果: ${successfulImages.length}/${promises.length} 成功`);
+            
             let altText;
+            let replacementCount = 0;
+            
             for (const image of successfulImages) {
+                // 確保 image.url 不為空
+                if (!image.url) {
+                    console.warn(`[ImageTagProcessor] 警告: ${image.name} 的 URL 為空，跳過替換`);
+                    continue;
+                }
+                
                 altText = this.settings.imageAltText ? 
                     path.parse(image.name)?.name?.replaceAll("-", " ")?.replaceAll("_", " ") : 
                     '';
-                value = value.replaceAll(image.source, `![${altText}](${image.url})`);
+                
+                const newMarkdown = `![${altText}](${image.url})`;
+                
+                // 檢查是否能找到要替換的內容
+                if (value.includes(image.source)) {
+                    console.log(`[ImageTagProcessor] 替換: "${image.source}" -> "${newMarkdown}"`);
+                    value = value.replaceAll(image.source, newMarkdown);
+                    replacementCount++;
+                } else {
+                    console.warn(`[ImageTagProcessor] 警告: 找不到要替換的內容: "${image.source}"`);
+                    // 嘗試調試 - 顯示當前內容的一部分來幫助診斷
+                    console.warn(`[ImageTagProcessor] 當前內容包含的類似字串:`, 
+                        value.split('\n').filter(line => line.includes(image.name)).slice(0, 3));
+                }
             }
+            
+            console.log(`[ImageTagProcessor] 總共替換了 ${replacementCount} 個鏈接`);
             
             if (this.settings.replaceOriginalDoc && this.getEditor()) {
                 this.getEditor()?.setValue(value);
@@ -131,7 +161,7 @@ export default class ImageTagProcessor {
             switch (action) {
                 case ACTION_PUBLISH:
                     navigator.clipboard.writeText(value);
-                    new Notice("Copied to clipboard");
+                    new Notice(`Copied to clipboard (${replacementCount}/${images.length} images processed)`);
                     break;
                 // more cases
                 default:
